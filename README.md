@@ -11,8 +11,8 @@ This project automates the full customer support ticket lifecycle — from intak
 
 A support ticket flows automatically through classification, team assignment, human escalation (for critical issues), resolution tracking, and feedback collection — with zero manual triage.
 
-📄 Full documentation: [`01_Documentation/Problem_Analysis_and_Documentation.pdf`](./01_Documentation/Problem_Analysis_and_Documentation.pdf)
-🖼 Architecture diagram: [`01_Documentation/Architecture_Diagram.png`](./01_Documentation/Architecture_Diagram.png)
+📄 Full documentation: [`Documentation/Problem_Analysis_and_Documentation.pdf`](./Documentation/Problem_Analysis_and_Documentation.pdf)
+🖼 Architecture diagram: [`Documentation/Architecture_Diagram.png`](./Documentation/02_Architecture_Diagram.png)
 🎥 Demo video: **[link here]**
 
 ---
@@ -47,13 +47,13 @@ Workflows are chained using n8n's **Execute Sub-workflow** trigger/action patter
 
 ## Advanced Features Implemented
 
-- ✅ **AI-powered decision making** — Gemini classifies category & priority from ticket text (Workflow 2)
-- ✅ **Human approval step** — Critical (P1) tickets trigger a manager escalation email before proceeding (Workflow 3)
-- ✅ **Error handling** — Resolved data-loss issues caused by Gmail nodes overwriting payloads, by referencing upstream nodes explicitly (`$('NodeName').item.json`)
-- ✅ **Logging & audit trail** — Every stage (status, category, priority, assigned team, timestamps) is logged to Google Sheets
-- ✅ **Scheduled workflow (Cron)** — Weekly analytics report (Workflow 5)
-- ✅ **Webhook-triggered workflows** — Ticket intake, resolution update, feedback submission
-- ✅ **Conditional branching** — Switch node (category routing) + IF node (priority-based escalation)
+- **AI-powered decision making** — Gemini classifies category & priority from ticket text (Workflow 2)
+- **Human approval step** — Critical (P1) tickets trigger a manager escalation email before proceeding (Workflow 3)
+- **Error handling** — Resolved data-loss issues caused by Gmail nodes overwriting payloads, by referencing upstream nodes explicitly (`$('NodeName').item.json`)
+- **Logging & audit trail** — Every stage (status, category, priority, assigned team, timestamps) is logged to Google Sheets
+- **Scheduled workflow (Cron)** — Weekly analytics report (Workflow 5)
+- **Webhook-triggered workflows** — Ticket intake, resolution update, feedback submission
+- **Conditional branching** — Switch node (category routing) + IF node (priority-based escalation)
 
 ---
 
@@ -115,4 +115,3 @@ ai-customer-support-automation/
 
 **Aditya Mane**
 B.Tech. Robotics and Artificial Intelligence, COEP Technological University, Pune
-MIS: 612302034
