@@ -1,0 +1,715 @@
+{
+  "name": "3 - Agent Assignment & Escalation.",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"ticket_id\": \"1786163190232\",\n  \"customer_email\": \"test@example.com\",\n  \"subject\": \"Refund issue\",\n  \"description\": \"My refund is delayed\",\n  \"category\": \"billing\",\n  \"priority\": \"P2\",\n  \"status\": \"Classified\"\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9c50ead0-d526-432e-89ae-f61e24f41d16",
+      "name": "Triggered by Classification"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "billing",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7b05e8ae-a70a-4b1a-8dba-f440fff33a1b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Billing"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d65bc042-1b68-46fa-abc7-6c27d36afb81",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "bug",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Bug"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "8e54988e-9d58-44e1-b635-48a6d8f59dbb",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "feature_request",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Feature Request"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "03f3e673-e6b2-424e-823b-23f24c47644d",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "general",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "General"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "8ae0817c-974b-4751-bd81-8a18402d577a",
+      "name": "Route by Category"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8d53bd3f-9a32-413d-aeaa-afbdccfe31c4",
+              "name": "assigned_team",
+              "value": "Billing Team",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        416,
+        -320
+      ],
+      "id": "ffa4bbb1-0abf-474c-bf69-43e53974226e",
+      "name": "Set Team - Billing"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "60bd26e7-6764-4d56-823b-44c0d806fc30",
+              "name": "assigned_team",
+              "value": "Engineering Team",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        416,
+        -128
+      ],
+      "id": "c62a643c-b351-4d3b-bb89-9a23f0ac50e4",
+      "name": "Set Team - Bug"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0bdd7a4c-68cd-47b1-b4bb-87055de1e1c6",
+              "name": "assigned_team",
+              "value": "Product Team",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        416,
+        128
+      ],
+      "id": "1674275d-a1e1-4148-bfae-74d532361459",
+      "name": "Set Team - Feature"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2559e928-b973-4018-bdf0-e711bdff9f58",
+              "name": "assigned_team",
+              "value": "Support Team",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        416,
+        304
+      ],
+      "id": "f6598889-20ff-4725-8ccc-b6a78a4dc7bf",
+      "name": "Set Team - General"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        736,
+        -32
+      ],
+      "id": "41bb111c-a48b-481c-85ee-39542c92fa6e",
+      "name": "Combine Routes"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7f8ff97b-8414-48b8-a9a3-25f554fc2dd6",
+              "leftValue": "={{ $json.priority }}",
+              "rightValue": "P1",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        944,
+        -32
+      ],
+      "id": "20f2afaa-21e2-4ae6-8ea3-e0e326ca4d44",
+      "name": "Check If Critical"
+    },
+    {
+      "parameters": {
+        "sendTo": "adityamane142000@gmail.com",
+        "subject": "=🚨 URGENT: P1 Ticket Needs Immediate Attention - #{{ $json.ticket_id }}",
+        "message": "=<p><strong>Critical ticket requires immediate review:</strong></p><p><strong>Ticket ID:</strong> {{ $json.ticket_id }}<br><strong>Customer:</strong> {{ $json.customer_email }}<br><strong>Subject:</strong> {{ $json.subject }}<br><strong>Category:</strong> {{ $json.category }}<br><strong>Assigned Team:</strong> {{ $json.assigned_team }}</p><p><strong>Description:</strong> {{ $json.description }}</p><p>Please review and approve assignment.</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1152,
+        -128
+      ],
+      "id": "78ad6037-6531-4b3e-9c4c-cfdaf56a5946",
+      "name": "Send Escalation Alert",
+      "webhookId": "6d91e71a-cd51-4dcc-a046-2783248bb4bf",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "WiHeew4Te4kv1jVV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1376,
+        -32
+      ],
+      "id": "413c3c73-eb11-4b2d-8cdf-b2202baa8c21",
+      "name": "Combine After Escalation Check"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1GWKeLFc5GEglIKeScCTIVtGaI9yIHOMfKO1MyHsH3BI",
+          "mode": "list",
+          "cachedResultName": "Support Tickets DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GWKeLFc5GEglIKeScCTIVtGaI9yIHOMfKO1MyHsH3BI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GWKeLFc5GEglIKeScCTIVtGaI9yIHOMfKO1MyHsH3BI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ticket_id": "={{ $('Combine Routes').item.json.ticket_id }}",
+            "status": "Assigned",
+            "assigned_team": "={{ $('Combine Routes').item.json.assigned_team }}"
+          },
+          "matchingColumns": [
+            "ticket_id"
+          ],
+          "schema": [
+            {
+              "id": "ticket_id",
+              "displayName": "ticket_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "customer_email",
+              "displayName": "customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "assigned_team",
+              "displayName": "assigned_team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1584,
+        -32
+      ],
+      "id": "1f1c56f2-8779-4c1f-8cb9-6a280653c769",
+      "name": "Update Ticket Assignment",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QKVoEkBM7jqT2wmB",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "VLRskHWdDqob6eKi",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/VLRskHWdDqob6eKi",
+          "cachedResultName": "4 - Customer Communication & Resolution Tracking"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ticket_id": "={{ $('Combine Routes').item.json.ticket_id }}",
+            "customer_email": "={{ $('Combine Routes').item.json.customer_email }}",
+            "subject": "={{ $('Combine Routes').item.json.subject }}",
+            "assigned_team": "={{ $('Combine Routes').item.json.assigned_team }}",
+            "priority": "={{ $('Combine Routes').item.json.priority }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ticket_id",
+              "displayName": "ticket_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "customer_email",
+              "displayName": "customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "assigned_team",
+              "displayName": "assigned_team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1792,
+        -32
+      ],
+      "id": "2a75f911-108d-4f94-b804-e84b529f7fa7",
+      "name": "Trigger Communication Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Triggered by Classification": {
+      "main": [
+        [
+          {
+            "node": "Route by Category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by Category": {
+      "main": [
+        [
+          {
+            "node": "Set Team - Billing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Team - Bug",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Team - Feature",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Team - General",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Team - Billing": {
+      "main": [
+        [
+          {
+            "node": "Combine Routes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Team - Bug": {
+      "main": [
+        [
+          {
+            "node": "Combine Routes",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Set Team - Feature": {
+      "main": [
+        [
+          {
+            "node": "Combine Routes",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Set Team - General": {
+      "main": [
+        [
+          {
+            "node": "Combine Routes",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Combine Routes": {
+      "main": [
+        [
+          {
+            "node": "Check If Critical",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Critical": {
+      "main": [
+        [
+          {
+            "node": "Send Escalation Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Combine After Escalation Check",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Send Escalation Alert": {
+      "main": [
+        [
+          {
+            "node": "Combine After Escalation Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine After Escalation Check": {
+      "main": [
+        [
+          {
+            "node": "Update Ticket Assignment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Ticket Assignment": {
+      "main": [
+        [
+          {
+            "node": "Trigger Communication Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0c206e2c-173d-4ea5-ad62-f2562e0d322c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "aa50e9798ae6e81581229591b5415c25b7f6c8e4796589a0cba4d87562802c79"
+  },
+  "nodeGroups": [],
+  "id": "dvQ4S7o1J2ykUWgU",
+  "tags": [
+    {
+      "updatedAt": "2026-08-08T04:35:21.078Z",
+      "createdAt": "2026-08-08T04:35:21.078Z",
+      "id": "QEfrwmWovJ806fHS",
+      "name": "sub-workflow no. 3"
+    }
+  ]
+}

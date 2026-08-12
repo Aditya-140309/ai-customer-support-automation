@@ -1,0 +1,366 @@
+{
+  "name": "1 - Ticket Collection & Registration",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ticket-intake",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ef95df3a-5bac-44a0-af16-0edc2d3dc3c7",
+      "name": "Receive New Ticket",
+      "webhookId": "ba1a31d0-9312-40c9-97c3-535c7a73c8ca"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d98853a6-f7bf-4f89-968d-e8dff2da328f",
+              "name": "ticket_id",
+              "value": "={{ $now.toMillis()}}",
+              "type": "string"
+            },
+            {
+              "id": "ef452981-ca31-46e2-ba42-6ce4f65f44a2",
+              "name": "customer_email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "f3250019-23cd-4925-afb4-a1e44ee6be19",
+              "name": "subject",
+              "value": "={{ $json.body.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "1a2a9c23-7346-4552-b12d-91642fec247c",
+              "name": "description",
+              "value": "={{ $json.body.description }}",
+              "type": "string"
+            },
+            {
+              "id": "cc73ff70-e864-4dad-918b-115709be54ff",
+              "name": "status",
+              "value": "=New",
+              "type": "string"
+            },
+            {
+              "id": "dec2b5b6-73d6-47ad-a8f6-898d2542d1d9",
+              "name": "created_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        208,
+        0
+      ],
+      "id": "60b528f5-8f7c-4311-ac5c-878d82af18c7",
+      "name": "Structure Ticket Data"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1GWKeLFc5GEglIKeScCTIVtGaI9yIHOMfKO1MyHsH3BI",
+          "mode": "list",
+          "cachedResultName": "Support Tickets DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GWKeLFc5GEglIKeScCTIVtGaI9yIHOMfKO1MyHsH3BI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GWKeLFc5GEglIKeScCTIVtGaI9yIHOMfKO1MyHsH3BI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ticket_id": "={{ $json.ticket_id}}",
+            "customer_email": "={{ $json.customer_email }}",
+            "subject": "={{ $json.subject }}",
+            "description": "={{ $json.description }}",
+            "status": "={{ $json.status }}",
+            "created_at": "={{ $json.created_at}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ticket_id",
+              "displayName": "ticket_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "customer_email",
+              "displayName": "customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        0
+      ],
+      "id": "0411966e-ba3a-4be8-80c1-cdce52a2c6bd",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QKVoEkBM7jqT2wmB",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.customer_email }}",
+        "subject": "=Your ticket has been received - #{{ $json.ticket_id }}",
+        "message": "=<p>Hi there,</p><p>We've received your support ticket and our team will get back to you shortly.</p><p><strong>Ticket ID:</strong> {{ $json.ticket_id }}<br><strong>Subject:</strong> {{ $json.subject }}</p><p>Thank you for your patience.</p><p>Best regards,<br>Support Team</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "ee9ae301-90db-42b6-9060-a8527bada97a",
+      "name": "Send Acknowledgment Email",
+      "webhookId": "d14338af-93dc-48a2-b1a5-18dbfe64fcaa",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "WiHeew4Te4kv1jVV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "MqJ8dIQjyddTd8Wg",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/MqJ8dIQjyddTd8Wg",
+          "cachedResultName": "2 - AI Ticket Classification & Prioritization"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ticket_id": "={{ $('Structure Ticket Data').item.json.ticket_id }}",
+            "customer_email": "={{ $('Structure Ticket Data').item.json.customer_email }}",
+            "subject": "={{ $('Structure Ticket Data').item.json.subject }}",
+            "description": "={{ $('Structure Ticket Data').item.json.description }}",
+            "status": "={{ $('Structure Ticket Data').item.json.status }}",
+            "created_at": "={{ $('Structure Ticket Data').item.json.created_at }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ticket_id",
+              "displayName": "ticket_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "customer_email",
+              "displayName": "customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        832,
+        0
+      ],
+      "id": "d98cc94f-7f71-4e5b-8ff4-2db45283b6ef",
+      "name": "Trigger Classification Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Receive New Ticket": {
+      "main": [
+        [
+          {
+            "node": "Structure Ticket Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structure Ticket Data": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send Acknowledgment Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Acknowledgment Email": {
+      "main": [
+        [
+          {
+            "node": "Trigger Classification Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e5e2a52f-0fc1-4c59-89a9-9755e2819347",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "aa50e9798ae6e81581229591b5415c25b7f6c8e4796589a0cba4d87562802c79"
+  },
+  "nodeGroups": [],
+  "id": "UnuLLOAqCLNJx7kS",
+  "tags": [
+    {
+      "updatedAt": "2026-08-01T05:12:34.341Z",
+      "createdAt": "2026-08-01T05:12:34.341Z",
+      "id": "AL8fdDslndblXFfW",
+      "name": "sub-workflow no. 1"
+    }
+  ]
+}

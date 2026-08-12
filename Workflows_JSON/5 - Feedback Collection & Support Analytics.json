@@ -1,0 +1,379 @@
+{
+  "name": "5 - Feedback Collection & Support Analytics",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"ticket_id\": \"1786183733378\",\n  \"customer_email\": \"test@example.com\",\n  \"subject\": \"Cannot reset password\"\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "036de6d6-bf24-4004-8aa5-20efec1da1ab",
+      "name": "Triggered by Resolution"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.customer_email }}",
+        "subject": "=How did we do? Ticket #{{ $json.ticket_id }}",
+        "message": "=<p>Hi there,</p><p>Your ticket regarding \"{{ $json.subject }}\" has been resolved. We'd love your feedback!</p><p>Please rate your experience (1-5, 5 being best) and reply to this email, or submit feedback here: http://localhost:5678/webhook-test/submit-feedback</p><p>Ticket ID: {{ $json.ticket_id }}</p><p>Thank you!</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "2e55bf99-3f97-4d20-afc9-9c3b2f7667e1",
+      "name": "Send Feedback Survey",
+      "webhookId": "4a2f5f4b-0319-4492-9965-fd5213aaee71",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "WiHeew4Te4kv1jVV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "submit-feedback",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        208
+      ],
+      "id": "e54d2550-de4d-4d1b-8e3f-5dab783f6018",
+      "name": "Receive Feedback",
+      "webhookId": "5abb0812-8461-49cf-bca9-5a288947282a"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e5d97c41-982d-4cd2-b972-5021bd926231",
+              "name": "ticket_id",
+              "value": "={{ $json.body.ticket_id }}",
+              "type": "string"
+            },
+            {
+              "id": "e58cdf1a-5b85-42eb-8dca-4dcf485d676c",
+              "name": "customer_email",
+              "value": "={{ $json.body.customer_email }}",
+              "type": "string"
+            },
+            {
+              "id": "d03f97f3-b683-43ed-b602-83d8251b5598",
+              "name": "rating",
+              "value": "={{ $json.body.rating }}",
+              "type": "string"
+            },
+            {
+              "id": "41dc30bb-f7cb-4612-bbf8-20c04c083530",
+              "name": "comments",
+              "value": "={{ $json.body.comments }}",
+              "type": "string"
+            },
+            {
+              "id": "75890cd0-9117-4302-aa42-10c0150db9e1",
+              "name": "submitted_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        208,
+        208
+      ],
+      "id": "c44c3875-983e-470e-ad3f-0de546e33f74",
+      "name": "Structure Feedback Data"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1GWKeLFc5GEglIKeScCTIVtGaI9yIHOMfKO1MyHsH3BI",
+          "mode": "list",
+          "cachedResultName": "Support Tickets DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GWKeLFc5GEglIKeScCTIVtGaI9yIHOMfKO1MyHsH3BI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1194875285,
+          "mode": "list",
+          "cachedResultName": "Feedback",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GWKeLFc5GEglIKeScCTIVtGaI9yIHOMfKO1MyHsH3BI/edit#gid=1194875285"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ticket_id": "={{ $json.ticket_id }}",
+            "customer_email": "={{ $json.customer_email }}",
+            "rating": "={{ $json.rating }}",
+            "comments": "={{ $json.comments }}",
+            "submitted_at": "={{ $json.submitted_at }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ticket_id",
+              "displayName": "ticket_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "customer_email",
+              "displayName": "customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rating",
+              "displayName": "rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "comments",
+              "displayName": "comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "submitted_at",
+              "displayName": "submitted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        208
+      ],
+      "id": "ad259d15-9bf4-40cb-9c75-d76bf7d87e71",
+      "name": "Log Feedback",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QKVoEkBM7jqT2wmB",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtHour": 12
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        416
+      ],
+      "id": "49a5da6f-68c3-415b-8739-1c21bc02d881",
+      "name": "Weekly Analytics Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1GWKeLFc5GEglIKeScCTIVtGaI9yIHOMfKO1MyHsH3BI",
+          "mode": "list",
+          "cachedResultName": "Support Tickets DB",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GWKeLFc5GEglIKeScCTIVtGaI9yIHOMfKO1MyHsH3BI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GWKeLFc5GEglIKeScCTIVtGaI9yIHOMfKO1MyHsH3BI/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        416
+      ],
+      "id": "536b385f-5412-4960-a75e-574709909cdb",
+      "name": "Get All Tickets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "QKVoEkBM7jqT2wmB",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst total = items.length;\nconst byCategory = {};\nconst byPriority = {};\n\nfor (const item of items) {\n  const cat = item.json.category || \"unclassified\";\n  const pri = item.json.priority || \"unclassified\";\n  byCategory[cat] = (byCategory[cat] || 0) + 1;\n  byPriority[pri] = (byPriority[pri] || 0) + 1;\n}\n\nconst summary = `Total Tickets: ${total}\\nBy Category: ${JSON.stringify(byCategory)}\\nBy Priority: ${JSON.stringify(byPriority)}`;\n\nreturn [{ json: { summary, total, byCategory, byPriority } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        416
+      ],
+      "id": "be508ad1-a652-420f-b013-e02b33e3042b",
+      "name": "Generate Analytics Summary"
+    },
+    {
+      "parameters": {
+        "sendTo": "adityamane142000@gmail.com",
+        "subject": "Weekly Support Analytics Report",
+        "message": "={{ $json.summary }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        416
+      ],
+      "id": "494f3310-25cf-4d3a-b486-1621c0fbbe2a",
+      "name": "Send Analytics Report",
+      "webhookId": "3199dbe1-77cd-411f-849f-33bf3c978eab",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "WiHeew4Te4kv1jVV",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Triggered by Resolution": {
+      "main": [
+        [
+          {
+            "node": "Send Feedback Survey",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive Feedback": {
+      "main": [
+        [
+          {
+            "node": "Structure Feedback Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structure Feedback Data": {
+      "main": [
+        [
+          {
+            "node": "Log Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekly Analytics Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get All Tickets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Tickets": {
+      "main": [
+        [
+          {
+            "node": "Generate Analytics Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Analytics Summary": {
+      "main": [
+        [
+          {
+            "node": "Send Analytics Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7a04c787-0d24-43d7-864b-d9cd3389d179",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "aa50e9798ae6e81581229591b5415c25b7f6c8e4796589a0cba4d87562802c79"
+  },
+  "nodeGroups": [],
+  "id": "oDh33tgSY2UmWOeI",
+  "tags": [
+    {
+      "updatedAt": "2026-08-08T10:43:17.259Z",
+      "createdAt": "2026-08-08T10:43:17.259Z",
+      "id": "ddtZzykkxH1Fy9NR",
+      "name": "sub-workflow no. 5 last"
+    }
+  ]
+}
